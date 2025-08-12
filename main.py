@@ -7,11 +7,12 @@ import numpy as np
 from imutils import paths
 import os
 from sklearn.svm import LinearSVC
+from sklearn.model_selection import train_test_split
 
 # ============================
 #   ENTRENAMIENTO DEL SVM
 # ============================
-dim = (50, 50)  
+dim = (50, 50)
 interpolation = cv2.INTER_AREA
 
 def cargarImagen(ruta):
@@ -42,6 +43,23 @@ x = np.asarray(x)
 model_color = LinearSVC(C=100.0, random_state=1, max_iter=1000)
 model_color.fit(x, y)
 print("[INFO] Modelo SVM (HSV+RGB) entrenado con", len(y), "ejemplos.")
+
+# ============================
+#   RESULTADOS DEL ENTRENAMIENTO
+# ============================
+tam_dataset = len(y)
+clases_colores = sorted(set(y))
+
+# Calcular precisión estimada con división entrenamiento/prueba
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+model_temp = LinearSVC(C=100.0, random_state=1, max_iter=1000)
+model_temp.fit(X_train, y_train)
+precision_test = model_temp.score(X_test, y_test) * 100
+
+print(f"Tamaño del dataset: {tam_dataset} imágenes.")
+print(f"Clases de colores: {clases_colores}")
+print(f"Precisión estimada: {precision_test:.2f}% en pruebas internas.")
+print("==============================================\n")
 
 # ============================
 #   APLICACIÓN CON YOLO + SVM
@@ -81,7 +99,6 @@ class ImageSelectorApp:
         self.main_frame = tk.Frame(self.root, bg="#e9ecef")
         self.main_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
-
         self.image_frame = tk.Frame(self.main_frame, bg="#fff", relief="groove", bd=2,
                                     width=740, height=480, highlightbackground="#4f8cff", highlightthickness=2)
         self.image_frame.pack(side=tk.LEFT, padx=(30, 10), pady=10)
@@ -90,7 +107,6 @@ class ImageSelectorApp:
         self.image_label = tk.Label(self.image_frame, bg="#fff")
         self.image_label.pack(expand=True)
 
-        
         self.button_frame = tk.Frame(self.main_frame, bg="#e9ecef")
         self.button_frame.pack(side=tk.LEFT, padx=(10, 30), pady=10, fill=tk.Y)
 
@@ -105,10 +121,8 @@ class ImageSelectorApp:
         self.camera_var = tk.StringVar(value="Laptop")
         camera_frame = tk.Frame(self.button_frame, bg="#e9ecef")
         camera_frame.pack(pady=5, anchor="n")
-        ttk.Radiobutton(camera_frame, text="Laptop", variable=self.camera_var, value="Laptop",
-                        style="TRadiobutton").pack(anchor="w")
-        ttk.Radiobutton(camera_frame, text="DroidCam", variable=self.camera_var, value="DroidCam",
-                        style="TRadiobutton").pack(anchor="w")
+        ttk.Radiobutton(camera_frame, text="Laptop", variable=self.camera_var, value="Laptop").pack(anchor="w")
+        ttk.Radiobutton(camera_frame, text="DroidCam", variable=self.camera_var, value="DroidCam").pack(anchor="w")
 
         ttk.Button(self.button_frame, text="Abrir Cámara", command=self.abrir_camara,
                    **button_style).pack(pady=(18, 10), anchor="n")
