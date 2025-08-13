@@ -1,3 +1,10 @@
+# Integrantes
+
+Carlos David Trejo Mejía 20212000569 
+Ángel Andrés Carias Castillo 20222001305 
+Erick Leonel Turcios Euceda 20212021280 
+Darlan Josué Perdomo Fajardo 20222000729 
+
 # Detector de Objetos y Colores con YOLOv8 + SVM
 
 Este proyecto es una aplicación de escritorio en Python que permite detectar objetos y predecir el color dominante en imágenes usando YOLOv8 y un clasificador SVM entrenado con características HSV y RGB.
